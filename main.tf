@@ -153,10 +153,11 @@ data "aws_ami" "ubuntu" {
 
 # Public EC2
 resource "aws_instance" "le-ec2-public-01" {
-    ami           = aws_ami.ubuntu.id
+    ami           = data.aws_ami.ubuntu.id
     instance_type = "t2.micro"
+    security_groups = [aws_security_group.le-sg-public-01.id]
     subnet_id = aws_subnet.le-sn-public-01.id
-    security_groups = [aws_security_group.le-sg-public-01.name]
+    key_name       = aws_key_pair.le-keypair-01.key_name
     tags = {
         Costcenter = "devops2402"
     }
@@ -164,12 +165,17 @@ resource "aws_instance" "le-ec2-public-01" {
 
 # Private EC2
 resource "aws_instance" "le-ec2-private-01" {
-    ami           = aws_ami.ubuntu.id
+    ami           = data.aws_ami.ubuntu.id
     instance_type = "t2.micro"
+    security_groups = [aws_security_group.le-sg-private-01.id]
     subnet_id = aws_subnet.le-sn-private-01.id
-    security_groups = [aws_security_group.le-sg-private-01.name]
+    key_name       = aws_key_pair.le-keypair-01.key_name
     tags = {
         Costcenter = "devops2402"
     }
 }
 
+# Output of public IP
+output "public_ec2_ip" {
+  value = aws_instance.le-ec2-public-01.public_ip
+}
